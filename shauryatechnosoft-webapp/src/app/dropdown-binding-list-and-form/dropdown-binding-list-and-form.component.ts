@@ -65,13 +65,30 @@ export class DropdownBindingListAndFormComponent implements OnInit {
 
   edit(item:any){
     this.buttonLabel = "Update";
-    this.form.patchValue({
-      state: item.state,
-      division: item.division,
-      district: item.district,
-      taluka: item.taluka,
-      village: item.village
-    })
+    this.dropdownBindingService.getDivisions(item.state.id).subscribe(res => {
+      this.divisions = res.responseData;
+      this.dropdownBindingService.getDistricts(item.division.id).subscribe(res => {
+        this.districts = res.responseData;
+        this.dropdownBindingService.getTalukas(item.district.id).subscribe(res => {
+          this.talukas = res.responseData
+          this.dropdownBindingService.getVillages(item.taluka.id).subscribe(res => {
+            this.villages = res.responseData
+            let state = this.states.find(x => x.id == item.state.id);
+            let division = this.divisions.find(x => x.id == item.division.id);
+            let district = this.districts.find(x => x.id == item.district.id);
+            let taluka = this.talukas.find(x => x.id == item.taluka.id);
+            let village = this.villages.find(x => x.id == item.village.id);
+            this.form.patchValue({
+              state: state,
+              division: division,
+              district: district,
+              taluka: taluka,
+              village: village
+            })
+          });
+        });
+      })
+    });
   }
 
   delete(item:any){
